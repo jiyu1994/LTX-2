@@ -499,7 +499,7 @@ async def lifespan(app: FastAPI):
     logger.info("Enabled pipelines: %s", sorted(pipeline_manager.enabled))
     if torch.cuda.is_available():
         logger.info("GPU: %s", torch.cuda.get_device_name(0))
-        mem = torch.cuda.get_device_properties(0).total_mem / (1024**3)
+        mem = torch.cuda.get_device_properties(0).total_memory / (1024**3)
         logger.info("GPU Memory: %.1f GB", mem)
 
     worker_task = asyncio.create_task(worker_loop())
@@ -539,7 +539,7 @@ async def health():
     gpu_used = None
     if torch.cuda.is_available():
         gpu_name = torch.cuda.get_device_name(0)
-        gpu_total = round(torch.cuda.get_device_properties(0).total_mem / (1024**3), 2)
+        gpu_total = round(torch.cuda.get_device_properties(0).total_memory / (1024**3), 2)
         gpu_used = round(torch.cuda.memory_allocated(0) / (1024**3), 2)
 
     return HealthResponse(

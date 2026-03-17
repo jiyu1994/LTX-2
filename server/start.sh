@@ -22,7 +22,7 @@ echo " Config:   ${SCRIPT_DIR}/config.yaml"
 echo " API Docs: http://${HOST}:${PORT}/docs"
 echo "============================================"
 
-export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
+export PYTORCH_ALLOC_CONF=expandable_segments:True
 
 exec uv run --group server uvicorn server.app:app \
     --host "$HOST" \
