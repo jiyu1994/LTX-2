@@ -29,7 +29,7 @@ def main():
     )
     print(f"任务已提交: {task_id}")
 
-    client.wait_and_download(task_id, "outputs/text2video_fast.mp4")
+    client.wait_and_download(task_id, "outputs/text2video_fast.mp4", timeout=3600.0)
 
 
 if __name__ == "__main__":
