@@ -1,0 +1,44 @@
+# =============================================================================
+# LTX-2 推理服务配置
+# =============================================================================
+
+server:
+  host: "0.0.0.0"
+  port: 60317
+  # 已完成任务结果保留时间（秒），过期自动清理
+  result_ttl: 3600
+  # 上传文件保留时间（秒）
+  upload_ttl: 3600
+  # 最大队列长度，超出返回 503
+  max_queue_size: 20
+
+# 模型文件路径
+models:
+  # 完整模型 checkpoint（用于 two_stages / two_stages_hq / one_stage / a2vid）
+  checkpoint: "/home/yuji/.cache/modelscope/hub/models/Lightricks/LTX-2.3/ltx-2.3-22b-dev.safetensors"
+  # 蒸馏模型 checkpoint（用于 distilled 管线）
+  distilled_checkpoint: "/home/yuji/.cache/modelscope/hub/models/Lightricks/LTX-2.3/ltx-2.3-22b-distilled.safetensors"
+  # 蒸馏 LoRA（用于两阶段管线的 Stage 2）
+  distilled_lora: "/home/yuji/.cache/modelscope/hub/models/Lightricks/LTX-2.3/ltx-2.3-22b-distilled-lora-384.safetensors"
+  # 空间上采样器
+  spatial_upsampler: "/home/yuji/.cache/modelscope/hub/models/Lightricks/LTX-2.3/ltx-2.3-spatial-upscaler-x2-1.0.safetensors"
+  # Gemma 文本编码器根目录
+  gemma_root: "/home/yuji/.cache/modelscope/hub/models/google/gemma-3-12b-it-qat-q4_0-unquantized"
+
+# 启用的管线（可按需注释掉不需要的管线以节省初始化时间）
+pipelines:
+  - two_stages
+  - two_stages_hq
+  - one_stage
+  - distilled
+  - a2vid
+
+# 量化设置（可选，降低显存占用）
+# 可选值: null / "fp8-cast" / "fp8-scaled-mm"
+quantization: null
+
+# 默认蒸馏 LoRA 强度
+distilled_lora_strength: 0.8
+# HQ 管线的两阶段 LoRA 强度
+hq_distilled_lora_strength_stage_1: 0.25
+hq_distilled_lora_strength_stage_2: 0.5
