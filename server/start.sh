@@ -24,7 +24,7 @@ echo "============================================"
 
 export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
 
-exec uv run uvicorn server.app:app \
+exec uv run --group server uvicorn server.app:app \
     --host "$HOST" \
     --port "$PORT" \
     --workers "$WORKERS" \
