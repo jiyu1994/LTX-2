@@ -1,0 +1,99 @@
+# =============================================================================
+# LTX-2 Video-Only LoRA 训练配置
+# =============================================================================
+#
+# 硬件: 4x H200 (GPU 4,5,6,7)
+# 数据: ~400 样本, 10 epochs
+# 计算: 400 × 10 / 4 GPU = 1000 steps, 每 epoch = 100 steps
+#
+# =============================================================================
+
+model:
+  # 下载: https://huggingface.co/Lightricks/LTX-2  → ltx-2-19b-dev.safetensors
+  model_path: "/path/to/ltx-2-19b-dev.safetensors"
+
+  # 下载: https://huggingface.co/google/gemma-3-12b-it-qat-q4_0-unquantized/
+  text_encoder_path: "/path/to/gemma-3-12b-it-qat-q4_0-unquantized"
+
+  training_mode: "lora"
+  load_checkpoint: null
+
+lora:
+  rank: 64
+  alpha: 64
+  dropout: 0.0
+  target_modules:
+    - "attn1.to_k"
+    - "attn1.to_q"
+    - "attn1.to_v"
+    - "attn1.to_out.0"
+    - "attn2.to_k"
+    - "attn2.to_q"
+    - "attn2.to_v"
+    - "attn2.to_out.0"
+
+training_strategy:
+  name: "text_to_video"
+  first_frame_conditioning_p: 0.5
+  with_audio: false
+
+optimization:
+  learning_rate: 5e-5
+  steps: 1000
+  batch_size: 1
+  gradient_accumulation_steps: 1
+  max_grad_norm: 1.0
+  optimizer_type: "adamw"
+  scheduler_type: "cosine"
+  scheduler_params: {}
+  enable_gradient_checkpointing: true
+
+acceleration:
+  mixed_precision_mode: "bf16"
+  quantization: null
+  load_text_encoder_in_8bit: false
+
+data:
+  preprocessed_data_root: "/path/to/civitaiNSFWVideoDataset_800/.precomputed"
+  num_dataloader_workers: 4
+
+validation:
+  prompts:
+    - "请替换为你的验证 prompt"
+  negative_prompt: "worst quality, inconsistent motion, blurry, jittery, distorted"
+  images: null
+  video_dims: [512, 512, 129]
+  frame_rate: 25.0
+  seed: 42
+  inference_steps: 30
+  interval: 100
+  videos_per_prompt: 1
+  guidance_scale: 4.0
+  stg_scale: 1.0
+  stg_blocks: [29]
+  stg_mode: "stg_v"
+  generate_audio: false
+  skip_initial_validation: false
+
+checkpoints:
+  interval: 100
+  keep_last_n: -1
+  precision: "bfloat16"
+
+flow_matching:
+  timestep_sampling_mode: "shifted_logit_normal"
+  timestep_sampling_params: {}
+
+hub:
+  push_to_hub: false
+  hub_model_id: null
+
+wandb:
+  enabled: false
+  project: "ltx2-video-lora"
+  entity: null
+  tags: ["ltx2", "lora", "video-only"]
+  log_validation_videos: true
+
+seed: 42
+output_dir: "outputs/ltx2_video_lora"
